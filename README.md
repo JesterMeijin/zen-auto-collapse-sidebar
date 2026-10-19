@@ -20,8 +20,8 @@ by repository: `JesterMeijin/zen-auto-collapse-sidebar`.
   customize mode and while Zen's Library is open, and Zen behaves as usual there.
 - On macOS the sidebar's top row (window buttons + sidebar toggle) stays visible
   while collapsed and the toolbar starts right of the toggle.
-- Animations need *Animation effects* enabled in the OS (with reduced motion on,
-  the sidebar opens instantly).
+- Animations ignore the OS reduced-motion setting. To turn them off, set the
+  animation duration to `0ms` (and the delays) in the mod options.
 
 ## What it does
 

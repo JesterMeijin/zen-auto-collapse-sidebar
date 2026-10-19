@@ -56,13 +56,6 @@
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  :root {
-    --sx-duration: 0ms;
-    --sx-collapse-delay: 0ms;
-  }
-}
-
 :root[zen-sidebar-expanded="true"]:not([zen-right-side="true"]):not([zen-single-toolbar="true"]):not([inDOMFullscreen="true"]):not([popup-window]):not([zen-compact-mode="true"]):not([customizing]):not([zen-compact-animating]):not(:has(zen-library[open], [zen-library-stack-open], [zen-library-stack-closing])) {
   --sx-reveal: calc(var(--sx-expanded-width) - var(--sx-collapsed-width));
   --sx-center: calc(var(--sx-collapsed-width) / 2);
