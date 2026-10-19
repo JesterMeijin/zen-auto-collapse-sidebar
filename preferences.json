@@ -1,0 +1,122 @@
+[
+  {
+    "type": "separator",
+    "label": "Size and timing"
+  },
+  {
+    "property": "mod.autocollapse.collapsed_width",
+    "label": "Width of the collapsed icon strip",
+    "type": "string",
+    "placeholder": "e.g: 55px",
+    "defaultValue": "55px"
+  },
+  {
+    "property": "mod.autocollapse.fixed_expanded_width",
+    "label": "Use a fixed expanded width (default: the sidebar's own width, set by dragging its edge)",
+    "type": "checkbox",
+    "defaultValue": false
+  },
+  {
+    "property": "mod.autocollapse.expanded_width",
+    "label": "Expanded width",
+    "type": "string",
+    "placeholder": "e.g: 280px",
+    "defaultValue": "250px",
+    "conditions": [
+      {
+        "if": {
+          "property": "mod.autocollapse.fixed_expanded_width",
+          "value": true
+        }
+      }
+    ]
+  },
+  {
+    "property": "mod.autocollapse.animation_duration",
+    "label": "Expand / collapse animation duration",
+    "type": "string",
+    "placeholder": "e.g: 200ms",
+    "defaultValue": "200ms"
+  },
+  {
+    "property": "mod.autocollapse.expand_delay",
+    "label": "Delay before expanding on hover",
+    "type": "string",
+    "placeholder": "e.g: 0ms",
+    "defaultValue": "0ms"
+  },
+  {
+    "property": "mod.autocollapse.collapse_delay",
+    "label": "Delay before collapsing after hover",
+    "type": "string",
+    "placeholder": "e.g: 100ms",
+    "defaultValue": "100ms"
+  },
+  {
+    "type": "separator",
+    "label": "Fine tuning: shift icons (positive = right)"
+  },
+  {
+    "property": "mod.autocollapse.offset_topbar",
+    "label": "Top bar buttons (sidebar toggle, back, forward, reload)",
+    "type": "string",
+    "placeholder": "e.g: 2px",
+    "defaultValue": "0px"
+  },
+  {
+    "property": "mod.autocollapse.offset_tabs",
+    "label": "Tab icons",
+    "type": "string",
+    "placeholder": "e.g: 2px",
+    "defaultValue": "0px"
+  },
+  {
+    "property": "mod.autocollapse.offset_pinned",
+    "label": "Pinned tab icons (added to tab icons)",
+    "type": "string",
+    "placeholder": "e.g: 2px",
+    "defaultValue": "0px"
+  },
+  {
+    "property": "mod.autocollapse.offset_folders",
+    "label": "Folder icons",
+    "type": "string",
+    "placeholder": "e.g: 2px",
+    "defaultValue": "0px"
+  },
+  {
+    "property": "mod.autocollapse.offset_space",
+    "label": "Space (workspace) icon",
+    "type": "string",
+    "placeholder": "e.g: 2px",
+    "defaultValue": "0px"
+  },
+  {
+    "property": "mod.autocollapse.offset_newtab",
+    "label": "New Tab icon",
+    "type": "string",
+    "placeholder": "e.g: 2px",
+    "defaultValue": "0px"
+  },
+  {
+    "property": "mod.autocollapse.offset_chevron",
+    "label": "Bottom \u00bb icon",
+    "type": "string",
+    "placeholder": "e.g: 2px",
+    "defaultValue": "0px"
+  },
+  {
+    "property": "mod.autocollapse.offset_media",
+    "label": "Now-playing app icon",
+    "type": "string",
+    "placeholder": "e.g: 2px",
+    "defaultValue": "0px"
+  },
+  {
+    "property": "mod.autocollapse.offset_media_y",
+    "label": "Now-playing app icon, vertical (negative = up)",
+    "type": "string",
+    "placeholder": "e.g: 2px",
+    "defaultValue": "0px"
+  }
+]

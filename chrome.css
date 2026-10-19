@@ -1,0 +1,377 @@
+/* ==========================================================================
+   Auto-Collapse Sidebar: Zen mod, distributed through Sine
+   The sidebar collapses to a narrow strip of centred icons and expands to
+   Zen's normal sidebar on hover.
+
+   Works with the "Multiple toolbars" browser layout and a left-side sidebar
+   (it switches itself off in other layouts, compact mode, fullscreen, customize
+   mode and while Zen's Library is open).
+
+   How it works
+   - The sidebar keeps Zen's normal expanded layout but is taken out of the
+     document flow and sits BEHIND the web page, clipped to a narrow strip.
+   - The page is pushed aside by the strip width, so only the strip shows.
+   - On hover the sidebar is unclipped and the page's edge is clipped away
+     (clip-path), revealing the sidebar. The page is never resized.
+
+   Structure of the rules: inside #navigator-toolbox, "idle" rules live in
+   &:not(:is(HOVER)) and "expanded" rules in &:is(HOVER), where HOVER is
+   hover / popup open / tab drag.
+
+   Settings come from preferences.json (mod.autocollapse.*): Sine (and Zen's mod
+   system) expose string preferences as --mod-autocollapse-<name> on :root, and
+   checkboxes are read with @media (-moz-pref(...)). Every variable has a
+   fallback, so the CSS also works pasted into userChrome.css, and when a
+   preference has not been created yet.
+   ========================================================================== */
+
+:root {
+  /* ---------------------------- SETTINGS ----------------------------- */
+  --sx-collapsed-width: var(--mod-autocollapse-collapsed_width, 55px);
+  --sx-duration: var(--mod-autocollapse-animation_duration, 200ms);
+  --sx-expand-delay: var(--mod-autocollapse-expand_delay, 0ms);
+  --sx-collapse-delay: var(--mod-autocollapse-collapse_delay, 100ms);
+  --sx-ease: ease-in-out;
+
+  /* ------------------ FINE TUNING (positive = right) ------------------ */
+  --sx-offset-topbar: var(--mod-autocollapse-offset_topbar, 0px);
+  --sx-offset-tabs: var(--mod-autocollapse-offset_tabs, 0px);
+  --sx-offset-pinned: var(--mod-autocollapse-offset_pinned, 0px);
+  --sx-offset-folders: var(--mod-autocollapse-offset_folders, 0px);
+  --sx-offset-space: var(--mod-autocollapse-offset_space, 0px);
+  --sx-offset-newtab: var(--mod-autocollapse-offset_newtab, 0px);
+  --sx-offset-chevron: var(--mod-autocollapse-offset_chevron, 0px);
+  --sx-offset-media: var(--mod-autocollapse-offset_media, 0px);
+  --sx-offset-media-y: var(--mod-autocollapse-offset_media_y, 0px);
+}
+
+/* Default: the expanded width follows the width you set by dragging Zen's
+   sidebar splitter. With "fixed expanded width" on, the string setting is used. */
+:root {
+  --sx-expanded-width: var(--zen-sidebar-width, 250px);
+}
+@media (-moz-pref("mod.autocollapse.fixed_expanded_width")) {
+  :root {
+    --sx-expanded-width: var(--mod-autocollapse-expanded_width, 250px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --sx-duration: 0ms;
+    --sx-collapse-delay: 0ms;
+  }
+}
+
+:root[zen-sidebar-expanded="true"]:not([zen-right-side="true"]):not([zen-single-toolbar="true"]):not([inDOMFullscreen="true"]):not([popup-window]):not([zen-compact-mode="true"]):not([customizing]):not([zen-compact-animating]):not(:has(zen-library[open], [zen-library-stack-open], [zen-library-stack-closing])) {
+  --sx-reveal: calc(var(--sx-expanded-width) - var(--sx-collapsed-width));
+  --sx-center: calc(var(--sx-collapsed-width) / 2);
+  --sx-radius: var(--zen-native-inner-radius, 8px);
+
+  /* ======================= Layout: sidebar + page ===================== */
+
+  /* Sidebar: out of flow, full width, behind the page, clipped to the strip */
+  #navigator-toolbox {
+    position: absolute !important;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    height: auto;
+    z-index: 1 !important; /* above Zen's #zen-browser-background layer */
+    width: var(--sx-expanded-width) !important;
+    min-width: var(--sx-expanded-width) !important;
+    max-width: var(--sx-expanded-width) !important;
+    -moz-window-dragging: no-drag;
+  }
+  #zen-sidebar-splitter { display: none !important; }
+
+  /* Page: leaves room for the strip and sits above the sidebar */
+  #zen-appcontent-wrapper {
+    z-index: 5 !important;
+    margin-left: var(--sx-collapsed-width);
+  }
+
+  /* Top bar (sidebar toggle, back, forward, reload, URL bar) spans the whole
+     window again, so its buttons sit at the far left above the strip. */
+  #zen-appcontent-navbar-wrapper {
+    margin-left: calc(-1 * var(--sx-collapsed-width) + var(--sx-center) - 13.5px + var(--sx-offset-topbar));
+  }
+
+  /* The page edge that gets clipped away to reveal the sidebar */
+  #tabbrowser-tabbox,
+  #zen-tabbox-wrapper,
+  #PersonalToolbar {
+    clip-path: inset(0 0 0 0 round var(--sx-radius));
+    transition: clip-path var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay);
+  }
+
+  /* ====================== State-dependent rules ======================= */
+
+  #navigator-toolbox {
+
+    /* ------------------------------ IDLE ------------------------------ */
+    &:not(:is(:hover, [has-popup-menu="true"], [movingtab], [flash-popup])) {
+      clip-path: inset(0 var(--sx-reveal) 0 0);
+      transition: clip-path var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay);
+
+      /* Icons: each is moved so its centre lands on --sx-center (half the
+         strip). The constants are where Zen's expanded layout naturally puts
+         that icon's centre; they don't depend on the strip width. On hover
+         the offsets slide back to 0 (Zen's own layout), so no gap is left
+         before the labels. */
+      tab:not([zen-essential], [zen-glance-tab="true"]) .tab-icon-stack {
+        /* margin, not translate: Zen's pinned rules override translate */
+        margin-inline-start: calc(var(--sx-center) - 23.5px + var(--sx-offset-tabs)) !important;
+      }
+      tab[pinned]:not([zen-essential], [zen-glance-tab="true"]) .tab-icon-stack {
+        translate: calc(0.3px + var(--sx-offset-pinned)) 0;
+      }
+      .tab-group-folder-icon {
+        translate: calc(var(--sx-center) - 22.5px + var(--sx-offset-folders)) 0;
+      }
+      .zen-current-workspace-indicator-icon {
+        translate: calc(var(--sx-center) - 23.5px + var(--sx-offset-space)) 0;
+      }
+      :is(
+        #tabs-newtab-button .toolbarbutton-icon,
+        #vertical-tabs-newtab-button .toolbarbutton-icon,
+        #tabbrowser-arrowscrollbox-periphery > toolbarbutton .toolbarbutton-icon
+      ) {
+        translate: calc(var(--sx-center) - 22px + var(--sx-offset-newtab)) 0;
+      }
+      :is(
+        tab:not([zen-essential], [zen-glance-tab="true"]) .tab-icon-stack,
+        .tab-group-folder-icon,
+        .zen-current-workspace-indicator-icon,
+        #tabs-newtab-button .toolbarbutton-icon,
+        #vertical-tabs-newtab-button .toolbarbutton-icon,
+        #tabbrowser-arrowscrollbox-periphery > toolbarbutton .toolbarbutton-icon
+      ) {
+        transition: margin-inline-start var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay),
+          translate var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay) !important;
+      }
+
+      /* No folder indentation, so every icon lines up on the centre. The
+         indent animates back in on hover (Zen's own transition). */
+      :is(zen-folder, zen-folder > .tab-group-container > *) {
+        margin-inline-start: 0 !important;
+      }
+
+      /* Text and the speaker icon fade out (!important: Zen has its own
+         transitions on these) */
+      :is(
+        .tab-label-container,
+        .tab-group-label,
+        .zen-current-workspace-indicator-name,
+        .tab-audio-button,
+        #tabs-newtab-button .toolbarbutton-text,
+        #vertical-tabs-newtab-button .toolbarbutton-text,
+        #tabbrowser-arrowscrollbox-periphery .toolbarbutton-text,
+        #tabbrowser-arrowscrollbox-periphery label
+      ) {
+        opacity: 0 !important;
+        transition: opacity var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay) !important;
+      }
+
+      /* ...and the speaker can't be clicked by accident in the narrow strip */
+      .tab-audio-button {
+        pointer-events: none;
+      }
+
+      /* "Now playing" card: no wider than the strip (it leaked past it) */
+      #zen-media-controls-toolbar {
+        width: calc(var(--sx-collapsed-width) - var(--zen-toolbox-padding, 8px) - 4px) !important;
+        max-width: calc(var(--sx-collapsed-width) - var(--zen-toolbox-padding, 8px) - 4px) !important;
+        overflow: hidden;
+        transition: width var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay),
+          max-width var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay) !important;
+      }
+      /* ...showing only the app icon (Zen hides it in narrow cards, so force
+         it back) and fading the playback / mute / device buttons out */
+      #zen-media-controls-toolbar .zen-media-focus-button {
+        display: flex !important;
+        /* natural icon centre is ~25px from the strip edge */
+        translate: calc(var(--sx-center) - 25px + var(--sx-offset-media)) var(--sx-offset-media-y);
+        animation: sx-media-icon-out var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay) backwards;
+      }
+      #zen-media-controls-toolbar :is(.zen-media-playback-buttons, .zen-media-mute-button, .media-device-buttons) {
+        position: absolute; /* out of the row, so the app icon alone is centred */
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay);
+      }
+
+      /* Highlights end at the strip edge, rounded */
+      tab:not([zen-essential], [zen-glance-tab="true"]) .tab-background {
+        clip-path: inset(0 calc(var(--sx-reveal) - var(--zen-toolbox-padding, 8px) + 3px) 0 0 round 8px);
+        transition: clip-path var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay);
+      }
+      :is(#tabs-newtab-button, #vertical-tabs-newtab-button, #tabbrowser-arrowscrollbox-periphery > toolbarbutton) {
+        clip-path: inset(0 calc(var(--sx-reveal) - var(--zen-toolbox-padding, 8px) + 5px) 0 0 round 8px);
+        transition: clip-path var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay),
+          background-color 0.1s ease !important;
+      }
+
+      /* Essentials: tiles of the first column shrink to fit the strip (like
+         the StormAnon mod); the other columns appear on hover. The width
+         animates (plain length -> Zen's 100%); its transition needs
+         !important to beat Zen's own tab transition. max-width: 100% keeps a
+         tile from ever exceeding its grid cell, so wide strips don't
+         overlap. */
+      tab[zen-essential] {
+        width: calc(var(--sx-collapsed-width) - var(--zen-toolbox-padding, 8px) - 4px) !important;
+        max-width: 100% !important;
+        transition: width var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay) !important;
+      }
+
+      /* Bottom buttons: a single "»" */
+      #zen-sidebar-foot-buttons {
+        max-height: 36px;
+        overflow: hidden;
+
+        & > * {
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay);
+        }
+        &::after {
+          opacity: 0.7;
+          transition: opacity var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay);
+        }
+      }
+    }
+
+    /* ---------------------------- EXPANDED ---------------------------- */
+    &:is(:hover, [has-popup-menu="true"], [movingtab], [flash-popup]) {
+      /* Unclip at once: a clipped area can't be hovered, so animating this
+         would drop the hover when the mouse outruns the animation. */
+      clip-path: inset(0 0 0 0);
+      transition: none;
+
+      /* Page edge slides away to reveal the sidebar */
+      & ~ #zen-appcontent-wrapper :is(#tabbrowser-tabbox, #zen-tabbox-wrapper, #PersonalToolbar:not([collapsed])) {
+        clip-path: inset(0 0 0 var(--sx-reveal) round var(--sx-radius));
+        transition-delay: var(--sx-expand-delay);
+      }
+      /* The page (and its wrapper box) must not steal the pointer while
+         open: the clip animation is slower than the mouse. The top bar keeps
+         working. */
+      & ~ #zen-appcontent-wrapper,
+      & ~ #zen-appcontent-wrapper :is(#tabbrowser-tabbox, #zen-tabbox-wrapper, #PersonalToolbar) {
+        pointer-events: none;
+      }
+      & ~ #zen-appcontent-wrapper #zen-appcontent-navbar-wrapper {
+        pointer-events: auto;
+      }
+
+      /* Icons slide back to Zen's own positions */
+      :is(
+        tab:not([zen-essential], [zen-glance-tab="true"]) .tab-icon-stack,
+        .tab-group-folder-icon,
+        .zen-current-workspace-indicator-icon,
+        #tabs-newtab-button .toolbarbutton-icon,
+        #vertical-tabs-newtab-button .toolbarbutton-icon,
+        #tabbrowser-arrowscrollbox-periphery > toolbarbutton .toolbarbutton-icon
+      ) {
+        transition: margin-inline-start var(--sx-duration) var(--sx-ease) var(--sx-expand-delay),
+          translate var(--sx-duration) var(--sx-ease) var(--sx-expand-delay) !important;
+      }
+
+      /* Text fades in */
+      :is(
+        .tab-label-container,
+        .tab-group-label,
+        .zen-current-workspace-indicator-name,
+        .tab-audio-button,
+        #tabs-newtab-button .toolbarbutton-text,
+        #vertical-tabs-newtab-button .toolbarbutton-text,
+        #tabbrowser-arrowscrollbox-periphery .toolbarbutton-text,
+        #tabbrowser-arrowscrollbox-periphery label
+      ) {
+        transition: opacity var(--sx-duration) var(--sx-ease) var(--sx-expand-delay) !important;
+      }
+
+      #zen-media-controls-toolbar {
+        width: 100% !important;
+        max-width: 100% !important;
+        transition: width var(--sx-duration) var(--sx-ease) var(--sx-expand-delay),
+          max-width var(--sx-duration) var(--sx-ease) var(--sx-expand-delay) !important;
+      }
+      #zen-media-controls-toolbar .zen-media-focus-button {
+        /* Zen hides this button while the card is narrower than 165px; keep it
+           visible while the card widens, or it pops in at the end */
+        display: flex !important;
+        translate: 0 0;
+        animation: sx-media-icon-in var(--sx-duration) var(--sx-ease) var(--sx-expand-delay) backwards;
+      }
+      #zen-media-controls-toolbar :is(.zen-media-playback-buttons, .zen-media-mute-button, .media-device-buttons) {
+        opacity: 1;
+        transition: opacity var(--sx-duration) var(--sx-ease) var(--sx-expand-delay);
+      }
+
+      /* Highlights open up */
+      tab:not([zen-essential], [zen-glance-tab="true"]) .tab-background {
+        clip-path: inset(0 0 0 0 round 8px);
+        transition: clip-path var(--sx-duration) var(--sx-ease) var(--sx-expand-delay);
+      }
+      :is(#tabs-newtab-button, #vertical-tabs-newtab-button, #tabbrowser-arrowscrollbox-periphery > toolbarbutton) {
+        clip-path: inset(0 0 0 0 round 8px);
+        transition: clip-path var(--sx-duration) var(--sx-ease) var(--sx-expand-delay),
+          background-color 0.1s ease !important;
+      }
+
+      tab[zen-essential] {
+        max-width: 100% !important;
+        transition: width var(--sx-duration) var(--sx-ease) var(--sx-expand-delay) !important;
+      }
+
+      /* Bottom buttons: full row */
+      #zen-sidebar-foot-buttons {
+        max-height: none;
+        overflow: visible;
+
+        & > * {
+          opacity: 1;
+          pointer-events: auto;
+          transition: opacity var(--sx-duration) var(--sx-ease) var(--sx-expand-delay);
+        }
+        &::after {
+          opacity: 0;
+          transition: opacity var(--sx-duration) var(--sx-ease) var(--sx-expand-delay);
+        }
+      }
+    }
+
+    /* "»" itself (both states; its opacity is set above) */
+    #zen-sidebar-foot-buttons {
+      position: relative;
+
+      &::after {
+        content: "\BB";
+        position: absolute;
+        top: -4px;
+        height: 36px;
+        width: 1em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 22px;
+        line-height: 1;
+        pointer-events: none;
+        left: calc(var(--sx-center) - var(--zen-toolbox-padding, 8px) - 0.5em + 2px + var(--sx-offset-chevron));
+      }
+    }
+  }
+}
+
+/* "Now playing" app icon: slides between its centred idle spot and Zen's own
+   spot. A keyframe animation rather than a transition, which didn't run for
+   this element. */
+@keyframes sx-media-icon-in {
+  from { translate: calc(var(--sx-center) - 25px + var(--sx-offset-media)) var(--sx-offset-media-y); }
+  to   { translate: 0 0; }
+}
+@keyframes sx-media-icon-out {
+  from { translate: 0 0; }
+  to   { translate: calc(var(--sx-center) - 25px + var(--sx-offset-media)) var(--sx-offset-media-y); }
+}
