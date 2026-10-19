@@ -8,9 +8,12 @@ behind the page, so web pages don't reflow.
 
 ## Install
 
-Install it with [Sine](https://github.com/CosmoCreeper/Sine): open the Sine
-marketplace in Zen's settings and search for **Auto-Collapse Sidebar**, or add it
-by repository: `JesterMeijin/zen-auto-collapse-sidebar`.
+Install it with [Sine](https://github.com/CosmoCreeper/Sine): open the `Sine
+Mods` page in Zen's settings and install the `Auto-Collapse Sidebar` mod by 
+repository: `JesterMeijin/zen-auto-collapse-sidebar` (currently not available 
+in the Sine Marketplace)
+
+<img width="2010" height="842" alt="image" src="https://github.com/user-attachments/assets/cc1e89cd-0b12-4112-b37a-f0f22007fbb8" />
 
 ## Requirements
 
