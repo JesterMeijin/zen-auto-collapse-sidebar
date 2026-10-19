@@ -64,6 +64,20 @@
     "defaultValue": "0px"
   },
   {
+    "property": "mod.autocollapse.mac_toolbar_start",
+    "label": "macOS: where the back button starts, from the window's left edge",
+    "type": "string",
+    "placeholder": "e.g: 110px",
+    "defaultValue": "110px"
+  },
+  {
+    "property": "mod.autocollapse.mac_top_row",
+    "label": "macOS: height of the always-visible top row (window buttons + toggle)",
+    "type": "string",
+    "placeholder": "e.g: 44px",
+    "defaultValue": "44px"
+  },
+  {
     "property": "mod.autocollapse.offset_tabs",
     "label": "Tab icons",
     "type": "string",

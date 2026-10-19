@@ -97,6 +97,23 @@
     margin-left: calc(-1 * var(--sx-collapsed-width) + var(--sx-center) - 13.5px + var(--sx-offset-topbar));
   }
 
+  /* macOS: the traffic lights and the sidebar toggle sit in the top-left
+     corner of the sidebar. The top row of the sidebar stays visible while
+     collapsed (see the clip-path and pointer-events rules below), and the
+     toolbar starts right after the toggle instead of sliding under it.
+     --sx-mac-toolbar-start is where the back button begins, measured from the
+     window's left edge; --sx-mac-top-row is the height of the visible row.
+     This overrides the rule above (same specificity, later), so a Zen build
+     without the -moz-platform feature just keeps the default behaviour. */
+  @media (-moz-platform: macos) {
+    --sx-mac-toolbar-start: var(--mod-autocollapse-mac_toolbar_start, 110px);
+    --sx-mac-top-row: var(--mod-autocollapse-mac_top_row, 44px);
+
+    #zen-appcontent-navbar-wrapper {
+      margin-left: calc(max(0px, var(--sx-mac-toolbar-start) - var(--sx-collapsed-width)) + var(--sx-offset-topbar));
+    }
+  }
+
   /* The page edge that gets clipped away to reveal the sidebar */
   #tabbrowser-tabbox,
   #zen-tabbox-wrapper,
@@ -113,6 +130,21 @@
     &:not(:is(:hover, [has-popup-menu="true"], [movingtab], [flash-popup])) {
       clip-path: inset(0 var(--sx-reveal) 0 0);
       transition: clip-path var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay);
+
+      @media (-moz-platform: macos) {
+        /* Top row (traffic lights + sidebar toggle) stays unclipped. Both
+           states are polygons with the same points so the clip still animates. */
+        clip-path: polygon(0 0, 100% 0, 100% var(--sx-mac-top-row), var(--sx-collapsed-width) var(--sx-mac-top-row), var(--sx-collapsed-width) 100%, 0 100%);
+
+        /* The page box is shifted over the toggle: let clicks and hover fall
+           through it to the sidebar, keeping only its real contents clickable. */
+        & ~ #zen-appcontent-wrapper {
+          pointer-events: none;
+        }
+        & ~ #zen-appcontent-wrapper :is(#zen-appcontent-navbar-wrapper, #zen-tabbox-wrapper, #tabbrowser-tabbox, #PersonalToolbar) {
+          pointer-events: auto;
+        }
+      }
 
       /* Icons: each is moved so its centre lands on --sx-center (half the
          strip). The constants are where Zen's expanded layout naturally puts
@@ -171,6 +203,16 @@
       ) {
         opacity: 0 !important;
         transition: opacity var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay) !important;
+      }
+
+      /* A Space without an icon: Zen puts the first letter of its name in the
+         icon element but hides it; show it while collapsed. */
+      .zen-current-workspace-indicator-icon[no-icon="true"] {
+        display: flex !important;
+        font-weight: 600;
+        opacity: 1;
+        transition: translate var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay),
+          opacity var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay) !important;
       }
 
       /* ...and the speaker can't be clicked by accident in the narrow strip */
@@ -248,6 +290,10 @@
       clip-path: inset(0 0 0 0);
       transition: none;
 
+      @media (-moz-platform: macos) {
+        clip-path: polygon(0 0, 100% 0, 100% var(--sx-mac-top-row), 100% var(--sx-mac-top-row), 100% 100%, 0 100%);
+      }
+
       /* Page edge slides away to reveal the sidebar */
       & ~ #zen-appcontent-wrapper :is(#tabbrowser-tabbox, #zen-tabbox-wrapper, #PersonalToolbar:not([collapsed])) {
         clip-path: inset(0 0 0 var(--sx-reveal) round var(--sx-radius));
@@ -275,6 +321,15 @@
       ) {
         transition: margin-inline-start var(--sx-duration) var(--sx-ease) var(--sx-expand-delay),
           translate var(--sx-duration) var(--sx-ease) var(--sx-expand-delay) !important;
+      }
+
+      /* ...and the letter of an icon-less Space cross-fades into the name */
+      .zen-current-workspace-indicator-icon[no-icon="true"] {
+        display: flex !important;
+        opacity: 0;
+        pointer-events: none;
+        transition: translate var(--sx-duration) var(--sx-ease) var(--sx-expand-delay),
+          opacity var(--sx-duration) var(--sx-ease) var(--sx-expand-delay) !important;
       }
 
       /* Text fades in */
