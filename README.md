@@ -21,6 +21,7 @@ in the Sine Marketplace)
   expanded state, sidebar on the **left**.
 - The mod switches itself off in other layouts, compact mode, fullscreen,
   customize mode and while Zen's Library is open, and Zen behaves as usual there.
+- In web app (taskbar tab) windows the sidebar and the sidebar toggle are hidden.
 - On macOS the sidebar's top row (window buttons + sidebar toggle) stays visible
   while collapsed and the toolbar starts right of the toggle.
 - Animations ignore the OS reduced-motion setting. To turn them off, set the

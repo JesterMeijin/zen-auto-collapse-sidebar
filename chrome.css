@@ -5,7 +5,8 @@
 
    Works with the "Multiple toolbars" browser layout and a left-side sidebar
    (it switches itself off in other layouts, compact mode, fullscreen, customize
-   mode and while Zen's Library is open).
+   mode and while Zen's Library is open). In web app / taskbar tab windows the
+   mod is off and the sidebar and its toggle are hidden.
 
    How it works
    - The sidebar keeps Zen's normal expanded layout but is taken out of the
@@ -56,7 +57,7 @@
   }
 }
 
-:root[zen-sidebar-expanded="true"]:not([zen-right-side="true"]):not([zen-single-toolbar="true"]):not([inDOMFullscreen="true"]):not([popup-window]):not([zen-compact-mode="true"]):not([customizing]):not([zen-compact-animating]):not(:has(zen-library[open], [zen-library-stack-open], [zen-library-stack-closing])) {
+:root[zen-sidebar-expanded="true"]:not([zen-right-side="true"]):not([zen-single-toolbar="true"]):not([inDOMFullscreen="true"]):not([popup-window]):not([id^="taskbartab-"]):not([zen-compact-mode="true"]):not([customizing]):not([zen-compact-animating]):not(:has(zen-library[open], [zen-library-stack-open], [zen-library-stack-closing])) {
   --sx-reveal: calc(var(--sx-expanded-width) - var(--sx-collapsed-width));
   --sx-center: calc(var(--sx-collapsed-width) / 2);
   --sx-radius: var(--zen-native-inner-radius, 8px);
@@ -410,6 +411,16 @@
       }
     }
   }
+}
+
+/* Web app / taskbar tab windows: no sidebar at all (and no sidebar toggle) */
+:root[id^="taskbartab-"] :is(#navigator-toolbox, #zen-sidebar-splitter, #zen-toggle-compact-mode) {
+  display: none !important;
+}
+
+/* Web app windows: keep the same small left gap whether or not compact mode is on */
+:root[id^="taskbartab-"] #zen-tabbox-wrapper {
+  margin-left: 8px !important;
 }
 
 /* "Now playing" app icon: slides between its centred idle spot and Zen's own
