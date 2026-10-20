@@ -6,7 +6,7 @@ toolbars** layout and replaces Zen's own collapsed-sidebar mode with one that
 expands when you point at it. Nothing is resized: the sidebar slides out from
 behind the page, so web pages don't reflow.
 
-<img width="1950" height="1214" alt="AutoCollapseSidebar" src="https://github.com/user-attachments/assets/d8fbaa30-c3b8-41a4-9dbd-a34ebc1a6f18" />
+<img width="1490" height="864" alt="AutoCollapseSidebar" src="https://github.com/user-attachments/assets/81b3041c-50e5-4c78-95c6-fa0199a57327" />
 
 ## Install
 
