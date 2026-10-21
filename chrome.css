@@ -486,11 +486,25 @@
         opacity: 0;
       }
       /* Zen hides this button (opacity 0, visibility collapse) unless the
-         tab is empty or the sidebar is hovered: keep it visible in the strip */
+         tab is empty or the sidebar is hovered, and Firefox removes it
+         (display: none) on some pages: keep it visible in the strip, as the search
+         glass whatever the page */
+      & #identity-icon {
+        list-style-image: url("chrome://browser/skin/zen-icons/search-glass.svg") !important;
+        filter: none;
+      }
       & #identity-icon-box {
+        display: flex !important;
         opacity: 1 !important;
         visibility: visible !important;
         translate: calc(var(--sx-strip) / 2 - 16px + var(--sx-offset-urlbar)) 0;
+      }
+    }
+    /* On a loaded page Zen puts the button at the END of the URL bar (order: 2)
+       instead of the start, so it is centred from the other side */
+    &:not([zen-has-empty-tab="true"]) #navigator-toolbox:not(:is(:hover, [has-popup-menu="true"], [movingtab], [flash-popup])) {
+      & #identity-icon-box {
+        translate: calc(-1 * (var(--sx-strip) / 2 - 16px) + var(--sx-offset-urlbar)) 0;
       }
     }
     /* Expanded: the search icon is back at Zen's own position */
