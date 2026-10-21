@@ -294,6 +294,7 @@
            isn't focused (macOS), so force it hidden */
         & #zen-library-button {
           opacity: 0 !important;
+          transition: opacity var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay) !important;
         }
         &::after {
           opacity: 0.7;
@@ -412,6 +413,10 @@
           opacity: 1;
           pointer-events: auto;
           transition: opacity var(--sx-duration) var(--sx-ease) var(--sx-expand-delay);
+        }
+        & #zen-library-button {
+          opacity: 1;
+          transition: opacity var(--sx-duration) var(--sx-ease) var(--sx-expand-delay) !important;
         }
         &::after {
           opacity: 0;
