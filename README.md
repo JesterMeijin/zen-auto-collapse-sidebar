@@ -19,9 +19,12 @@ in the Sine Marketplace)
 
 ## Requirements
 
-- Browser layout **Multiple toolbars** (Settings → Look and Feel), sidebar in its
-  expanded state, sidebar on the **left**.
-- The mod switches itself off in other layouts, compact mode, fullscreen,
+- Browser layout **Multiple toolbars** or **Single toolbar** (Settings → Look and Feel),
+  sidebar in its expanded state, sidebar on the **left**.
+- With **Single toolbar**, the same animations apply, the
+  URL bar shrinks to its search icon when collapsed, and Zen's own top bar
+  layout is left alone.
+- The mod switches itself off in compact mode, fullscreen,
   customize mode and while Zen's Library is open, and Zen behaves as usual there.
 - In web app (taskbar tab) windows the sidebar and the sidebar toggle are hidden.
 - On macOS the sidebar's top row (window buttons + sidebar toggle) stays visible

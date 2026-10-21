@@ -129,6 +129,13 @@
     "defaultValue": "0px"
   },
   {
+    "property": "mod.autocollapse.offset_urlbar",
+    "label": "Search icon (Single toolbar layout)",
+    "type": "string",
+    "placeholder": "e.g: 2px",
+    "defaultValue": "0px"
+  },
+  {
     "property": "mod.autocollapse.offset_chevron",
     "label": "Bottom \u00bb icon",
     "type": "string",
