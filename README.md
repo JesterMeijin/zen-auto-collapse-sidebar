@@ -34,7 +34,7 @@ in the Sine Marketplace)
 - Collapsed: tab, folder, Space and New Tab icons are centred in the strip, labels
   and the audio icon fade out, Essentials show their first column, the bottom
   buttons collapse into a single `»`, the "now playing" card shrinks to the app
-  icon, and the top bar (toggle, back, forward, reload) sits above the strip.
+  icon, and (macOS, or Windows / Linux with the option on) the top bar sits next to or above the strip.
 - Hover (or an open sidebar menu, or a tab being dragged): the sidebar opens and
   everything animates back to Zen's own layout.
 
@@ -44,6 +44,9 @@ Open the mod's options in Sine:
 
 - Width of the collapsed strip, expanded width (by default the sidebar's own
   width, or a fixed value), animation duration, expand delay, collapse delay.
+- Essentials as tiles (default) or as a vertical list, one per row.
+- Windows / Linux: align the top bar icons over the strip (off by default; Zen
+  then lays the top bar out to the right of the strip).
 - Fine tuning: shift individual icons left/right by a few pixels if a Zen
   update, a theme or your font size changes their alignment.
 

@@ -54,6 +54,22 @@
   },
   {
     "type": "separator",
+    "label": "Layout"
+  },
+  {
+    "property": "mod.autocollapse.essentials_vertical",
+    "label": "Show Essentials as a vertical list, one per row (default: tiles)",
+    "type": "checkbox",
+    "defaultValue": false
+  },
+  {
+    "property": "mod.autocollapse.align_topbar",
+    "label": "Windows / Linux: align the top bar icons (toggle, back, forward, reload) over the strip (default: off)",
+    "type": "checkbox",
+    "defaultValue": false
+  },
+  {
+    "type": "separator",
     "label": "Fine tuning: shift icons (positive = right)"
   },
   {

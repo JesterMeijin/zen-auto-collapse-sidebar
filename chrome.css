@@ -85,10 +85,21 @@
     margin-left: var(--sx-collapsed-width);
   }
 
-  /* Top bar (sidebar toggle, back, forward, reload, URL bar) spans the whole
-     window again, so its buttons sit at the far left above the strip. */
-  #zen-appcontent-navbar-wrapper {
-    margin-left: calc(-1 * var(--sx-collapsed-width) + var(--sx-center) - 13.5px + var(--sx-offset-topbar));
+  /* Windows / Linux, opt-in ("align top bar icons" option): the top bar
+     (sidebar toggle, back, forward, reload, URL bar) spans the whole window
+     again, so its buttons sit at the far left above the strip. Off by default:
+     Zen then lays the top bar out itself, to the right of the strip. */
+  @media (-moz-pref("mod.autocollapse.align_topbar")) {
+    #zen-appcontent-navbar-wrapper {
+      margin-left: calc(-1 * var(--sx-collapsed-width) + var(--sx-center) - 13.5px + var(--sx-offset-topbar));
+    }
+  }
+
+  /* Essentials as a vertical list, one per row (option, off by default = tiles) */
+  @media (-moz-pref("mod.autocollapse.essentials_vertical")) {
+    .zen-essentials-container {
+      grid-template-columns: 1fr !important;
+    }
   }
 
   /* macOS: the traffic lights and the sidebar toggle sit in the top-left
@@ -247,6 +258,15 @@
         transition: clip-path var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay),
           background-color 0.1s ease !important;
       }
+      /* Folder and Space highlights (hover / selected) animate like tabs */
+      zen-folder > .tab-group-label-container::before {
+        clip-path: inset(0 calc(var(--sx-reveal) - var(--zen-toolbox-padding, 8px) + 5px) 0 0 round 8px);
+        transition: clip-path var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay);
+      }
+      .zen-current-workspace-indicator::before {
+        clip-path: inset(0 calc(var(--sx-reveal) - 1.5 * var(--zen-toolbox-padding, 8px) + 5px) 0 0 round 8px);
+        transition: clip-path var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay);
+      }
 
       /* Essentials: tiles of the first column shrink to fit the strip (like
          the StormAnon mod); the other columns appear on hover. The width
@@ -269,6 +289,11 @@
           opacity: 0;
           pointer-events: none;
           transition: opacity var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay);
+        }
+        /* Library button: it showed through next to the "»" when the window
+           isn't focused (macOS), so force it hidden */
+        & #zen-library-button {
+          opacity: 0 !important;
         }
         &::after {
           opacity: 0.7;
@@ -367,6 +392,10 @@
         clip-path: inset(0 0 0 0 round 8px);
         transition: clip-path var(--sx-duration) var(--sx-ease) var(--sx-expand-delay),
           background-color 0.1s ease !important;
+      }
+      :is(zen-folder > .tab-group-label-container, .zen-current-workspace-indicator)::before {
+        clip-path: inset(0 0 0 0 round 8px);
+        transition: clip-path var(--sx-duration) var(--sx-ease) var(--sx-expand-delay);
       }
 
       tab[zen-essential] {
