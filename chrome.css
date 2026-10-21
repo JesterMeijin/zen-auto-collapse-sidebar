@@ -42,6 +42,7 @@
   --sx-offset-pinned: var(--mod-autocollapse-offset_pinned, 0px);
   --sx-offset-folders: var(--mod-autocollapse-offset_folders, 0px);
   --sx-offset-space: var(--mod-autocollapse-offset_space, 0px);
+  --sx-offset-split: var(--mod-autocollapse-offset_split, 0px);
   --sx-offset-newtab: var(--mod-autocollapse-offset_newtab, 0px);
   --sx-offset-chevron: var(--mod-autocollapse-offset_chevron, 0px);
   --sx-offset-urlbar: var(--mod-autocollapse-offset_urlbar, 0px);
@@ -192,6 +193,21 @@
       transition: width var(--sx-t) !important;
     }
 
+    /* Split view groups: the outlined box shrinks to the strip and grows back
+       (4px = its 2px side margins; Zen's own scale transition is kept), and
+       the tabs' paddings follow */
+    tab-group[split-view-group] .tab-group-container {
+      width: calc(var(--sx-fit-split) - 4px);
+      transition: width var(--sx-t), scale 0.1s ease !important;
+    }
+
+    tab-group[split-view-group] .tabbrowser-tab {
+      transition: padding-inline var(--sx-t) !important;
+      & .tab-content {
+        transition: padding var(--sx-t) !important;
+      }
+    }
+
     /* New Tab button highlight (the other highlights are in the states below,
        where their non-!important transitions keep the right specificity) */
     :is(#tabs-newtab-button, #vertical-tabs-newtab-button, #tabbrowser-arrowscrollbox-periphery > toolbarbutton) {
@@ -236,6 +252,7 @@
     &:not(:is(:hover, [has-popup-menu="true"], [movingtab], [flash-popup])) {
       --sx-t: var(--sx-duration) var(--sx-ease) var(--sx-collapse-delay);
       --sx-fit: var(--sx-strip);
+      --sx-fit-split: calc(var(--sx-strip) - 4px); /* leaves a margin before the strip edge */
 
       clip-path: inset(0 var(--sx-reveal) 0 0);
       transition: clip-path var(--sx-t);
@@ -268,7 +285,7 @@
 
       /* No folder indentation, so every icon lines up on the centre. The
          indent animates back in on hover (Zen's own transition). */
-      :is(zen-folder, zen-folder > .tab-group-container > *) {
+      :is(zen-folder, zen-folder > .tab-group-container > *, tab-group[split-view-group]) {
         margin-inline-start: 0 !important;
       }
 
@@ -329,6 +346,31 @@
         transition: clip-path var(--sx-t);
       }
 
+      /* Split view groups: same row as when expanded. The outlined box shrinks
+         to the strip, so its tabs sit side by side with their icons centred
+         (50% of the tab's content, which animates back to 0). */
+      tab-group[split-view-group] {
+        & .tab-group-container {
+          padding: 0;
+          outline: 2px solid var(--zen-colors-border-contrast);
+          outline-offset: -2px;
+        }
+        & .tabbrowser-tab {
+          --tab-min-width: 0px;
+          padding-inline: 0 !important;
+          & .tab-content {
+            padding: 0 !important;
+          }
+          & .tab-icon-stack {
+            margin-inline-start: calc(50% - 8px - 3px + var(--sx-offset-split)) !important;
+          }
+        }
+        /* the box is already strip-wide: no highlight clipping */
+        & .tab-background {
+          clip-path: inset(0 0 0 0 round 8px);
+        }
+      }
+
       /* Essentials: tiles of the first column shrink to fit the strip (like
          the StormAnon mod); the other columns appear on hover. */
       tab[zen-essential] {
@@ -358,6 +400,7 @@
     &:is(:hover, [has-popup-menu="true"], [movingtab], [flash-popup]) {
       --sx-t: var(--sx-duration) var(--sx-ease) var(--sx-expand-delay);
       --sx-fit: 100%;
+      --sx-fit-split: 100%;
 
       /* Unclip at once: a clipped area can't be hovered, so animating this
          would drop the hover when the mouse outruns the animation. */

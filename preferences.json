@@ -122,6 +122,13 @@
     "defaultValue": "0px"
   },
   {
+    "property": "mod.autocollapse.offset_split",
+    "label": "Split view tab icons",
+    "type": "string",
+    "placeholder": "e.g: 2px",
+    "defaultValue": "0px"
+  },
+  {
     "property": "mod.autocollapse.offset_newtab",
     "label": "New Tab icon",
     "type": "string",
